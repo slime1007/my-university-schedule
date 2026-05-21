@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+
+    <div id="app" class="schedule-app">
+        
+        <nav class="days-grid">
+            <button 
+                v-for="day in daysOfWeek" 
+                :key="day"
+                :class="['day-btn', { 'active': currentDay === day }]"
+                @click="currentDay = day"
+            >
+                {{ day }}
+            </button>
+        </nav>
+
+        <header class="schedule-header">
+            <h2 class="header-title"><span class="dot">•</span> {{ currentDay }}</h2>
+            <button 
+                @click="isEditing = !isEditing" 
+                :class="['btn-outline', { 'active-edit': isEditing }]"
+            >
+                {{ isEditing ? '✅ Зберегти' : '✏️ Редагувати' }}
+            </button>
+        </header>
+
+        <main class="pairs-list">
+            <div v-for="(item, index) in currentSchedule" :key="item.id" 
+                 :class="['pair-card', { 'pair-empty': !item.name && !isEditing }]">
+                
+                <div class="pair-time-block">
+                    <template v-if="!isEditing">
+                        <span class="pair-num">{{ item.num }}</span>
+                        <span class="pair-time">{{ item.time.replace(' - ', '\n') }}</span>
+                    </template>
+                    <template v-else>
+                        <input v-model="item.num" placeholder="№" class="edit-input title-input" style="text-align:center;">
+                        <input v-model="item.time" placeholder="00:00 - 00:00" class="edit-input time-edit-input">
+                    </template>
+                </div>
+
+                <div v-if="!isEditing" class="pair-info-block">
+                    <div v-if="item.name" class="pair-main">
+                        <a v-if="item.link" :href="item.link" target="_blank" class="pair-title link-active">
+                            🔗 {{ item.name }}
+                        </a>
+                        <h3 v-else class="pair-title">{{ item.name }}</h3>
+                        <span :class="['badge', `badge-${item.type}`]">{{ item.type }}</span>
+                    </div>
+                    <div v-if="item.name" class="pair-footer">
+                        <span class="teacher">{{ item.teacher }}</span>
+                        <span class="room">{{ item.room }}</span>
+                    </div>
+                    <div v-else class="empty-slot"><span class="dash">—</span></div>
+                </div>
+
+                <div v-else class="pair-info-block edit-mode">
+                    <input v-model="item.name" placeholder="Назва предмету (пусто = вікно)" class="edit-input title-input">
+                    <div class="edit-row">
+                        <input v-model="item.link" placeholder="Посилання (Zoom/Meet)" class="edit-input">
+                        <select v-model="item.type" class="edit-select">
+                            <option value="лекція">Лекція</option>
+                            <option value="лаб">Лаб</option>
+                            <option value="прак">Прак</option>
+                        </select>
+                    </div>
+                    <div class="edit-row">
+                        <input v-model="item.teacher" placeholder="Викладач" class="edit-input">
+                        <input v-model="item.room" placeholder="Аудиторія" class="edit-input">
+                        <button @click="removePairSlot(index)" class="btn-delete" title="Видалити пару">❌</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <button v-if="isEditing" @click="addPairSlot" class="btn-add-slot">
+                ➕ Додати нову пару / час
+            </button>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
