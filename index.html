@@ -23,14 +23,22 @@
         </nav>
 
         <header class="schedule-header">
-            <h2 class="header-title"><span class="dot">•</span> {{ currentDay }}</h2>
-            <button 
-                @click="isEditing = !isEditing" 
-                :class="['btn-outline', { 'active-edit': isEditing }]"
-            >
-                {{ isEditing ? '✅ Зберегти' : '✏️ Редагувати' }}
-            </button>
-        </header>
+    <h2 class="header-title"><span class="dot">•</span> {{ currentDay }}</h2>
+    
+    <div style="display: flex; gap: 8px;">
+        <input type="file" ref="fileInput" @change="importSchedule" accept=".json" style="display: none">
+        
+        <button @click="triggerImport" class="btn-outline" title="Завантажити розклад">📥</button>
+        <button @click="exportSchedule" class="btn-outline" title="Зберегти розклад">📤</button>
+
+        <button 
+            @click="isEditing = !isEditing" 
+            :class="['btn-outline', { 'active-edit': isEditing }]"
+        >
+            {{ isEditing ? '✅ Зберегти' : '✏️ Редагувати' }}
+        </button>
+    </div>
+</header>
 
         <main class="pairs-list">
             <div v-for="(item, index) in currentSchedule" :key="item.id" 
